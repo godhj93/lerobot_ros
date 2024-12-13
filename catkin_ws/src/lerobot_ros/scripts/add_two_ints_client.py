@@ -13,24 +13,6 @@ sys.path.append(os.path.join(os.path.dirname(__file__)))
 
 from transform import transform_to_configuration_space
 
-def handle_complete_request(req):
-    
-    data = pd.read_csv(csv_files[0])
-    pts = data.iloc[:, :3].values
-    
-    # Transform the points
-    transformed_pts = transform_to_configuration_space(pts)
-    
-    # Convert to Point[] message
-    points_msg = numpy_to_point_array(transformed_pts)
-    
-    rospy.loginfo("Sending points to the drawing server.")
-    
-    # Call the service
-    response = drawing_service(points_msg)
-    
-    return DrawingCompletedResponse(success=True)
-
 def numpy_to_point_array(pts):
     """
     Converts a numpy array of shape (data_length, 3) into a list of Point messages.
@@ -40,13 +22,11 @@ def numpy_to_point_array(pts):
 if __name__ == "__main__":
     rospy.init_node("drawing_client")
     
-    
     # Wait for the service to be available
     rospy.loginfo("Waiting for the drawing service to be available.")
     rospy.wait_for_service("drawing_request")
     rospy.loginfo("Waiting for the completed service to be available.")
     rospy.wait_for_service("drawing_completed")
-    
     
     try:
         # Create the service proxy
@@ -75,7 +55,7 @@ if __name__ == "__main__":
             response = drawing_service(points_msg)
             
             if response.success:
-                rospy.loginfo(f"Drawing Requested for file: {file_path}")
+                rospy.logwarn(f"Drawing Requested for file: {file_path}")
             else:
                 rospy.logerr(f"Failed to requesting drawing for file: {file_path}")
 
@@ -85,5 +65,6 @@ if __name__ == "__main__":
                 
                 if rospy.is_shutdown():
                     break
+                
     except rospy.ServiceException as e:
         rospy.logerr(f"Service call failed: {e}")

@@ -26,8 +26,7 @@ def handle_drawing_request(req):
     
     rospy.loginfo(f"Received {len(req.points)} points to draw.")
     current_task = [Point(x=pt.x, y=pt.y, z=pt.z) for pt in req.points]
-    task_done = False  # 작업 시작 플래그 설정
-    
+    task_done = False 
     return DrawingRequestResponse(success=True)
 
 def handle_drawing_complete(req):
@@ -46,10 +45,18 @@ def process_task():
     if current_task is not None:
         rospy.loginfo("Processing the task.")
         for idx, pt in enumerate(current_task):
-            # rospy.loginfo(f"Drawing point {idx+1}/{len(current_task):.2f} ({(idx+1)/len(current_task)*100:.2f})")
-            pass
-        
-        rospy.sleep(5)
+            
+            robot.target_ee_position = np.array([pt.x, pt.y, pt.z])
+            
+            robot.inverse_kinematics_rot_backup_5DOF(
+                    ee_target_pos=robot.target_ee_position, 
+                    ee_target_rot=fix_joint_angle(), 
+                    joint_name='joint5')
+            
+            # Synchronize with the viewer
+            viewer.sync()
+            rospy.loginfo(f"Drawing point {idx+1}/{len(current_task)}")        
+            
         rospy.logwarn("Task completed.")
         task_done = True
         current_task = None
@@ -73,8 +80,6 @@ if __name__ == "__main__":
             while viewer.is_running():
                 
                 process_task()
-                # Synchronize with the viewer
-                viewer.sync()
                 
                 # Check the keyboard interrupt
                 if rospy.is_shutdown():

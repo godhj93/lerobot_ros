@@ -11,6 +11,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__)))
 from robot import Robot
 from interface import SimulatedRobot
 
+
 def initialize_simulator(Hz = 100.0): 
     world, data = load_world()
     robot = SimulatedRobot(world, data)

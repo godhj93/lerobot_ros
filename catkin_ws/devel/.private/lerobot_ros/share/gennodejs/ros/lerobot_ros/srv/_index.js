@@ -1,8 +1,10 @@
 
 "use strict";
 
-let DrawingService = require('./DrawingService.js')
+let DrawingCompleted = require('./DrawingCompleted.js')
+let DrawingRequest = require('./DrawingRequest.js')
 
 module.exports = {
-  DrawingService: DrawingService,
+  DrawingCompleted: DrawingCompleted,
+  DrawingRequest: DrawingRequest,
 };

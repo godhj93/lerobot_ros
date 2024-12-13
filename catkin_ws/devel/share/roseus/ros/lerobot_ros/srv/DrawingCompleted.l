@@ -1,0 +1,1 @@
+/root/hri_lerobot/catkin_ws/devel/.private/lerobot_ros/share/roseus/ros/lerobot_ros/srv/DrawingCompleted.l

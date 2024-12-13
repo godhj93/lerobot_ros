@@ -5,6 +5,8 @@
   :depends-on (:roslisp-msg-protocol :roslisp-utils :geometry_msgs-msg
 )
   :components ((:file "_package")
-    (:file "DrawingService" :depends-on ("_package_DrawingService"))
-    (:file "_package_DrawingService" :depends-on ("_package"))
+    (:file "DrawingCompleted" :depends-on ("_package_DrawingCompleted"))
+    (:file "_package_DrawingCompleted" :depends-on ("_package"))
+    (:file "DrawingRequest" :depends-on ("_package_DrawingRequest"))
+    (:file "_package_DrawingRequest" :depends-on ("_package"))
   ))
