@@ -2,30 +2,86 @@
 
 from __future__ import print_function
 
-from lerobot_ros.srv import DrawingService, DrawingServiceResponse
+from lerobot_ros.srv import DrawingRequest, DrawingRequestResponse, DrawingCompleted, DrawingCompletedResponse
 import rospy
 from geometry_msgs.msg import Point
+from termcolor import colored
+import sys
+import os
+import numpy as np
+# Add the path to the utils
+sys.path.append(os.path.join(os.path.dirname(__file__)))
+from utils import load_world, fix_joint_angle, create_marker_traj, initialize_simulator
+from robot import Robot
+import mujoco.viewer
+import mujoco
 
+# 작업 상태 변수
+task_done = False
+current_task = None
 
 def handle_drawing_request(req):
-    """
-    Handles the drawing request by processing Point messages.
-    """
-    rospy.loginfo(f"Received {len(req.points)} points to draw.")
     
-    # Simulate drawing process
-    for pt in req.points:
-        rospy.loginfo(f"Drawing point: x={pt.x:.3f}, y={pt.y:.3f}, z={pt.z:.3f}")
-        rospy.sleep(0.001)  # Simulate processing time
+    global current_task, task_done
+    
+    rospy.loginfo(f"Received {len(req.points)} points to draw.")
+    current_task = [Point(x=pt.x, y=pt.y, z=pt.z) for pt in req.points]
+    task_done = False  # 작업 시작 플래그 설정
+    
+    return DrawingRequestResponse(success=True)
 
-    # Return success flag
-    return DrawingServiceResponse(success=True)
-
+def handle_drawing_complete(req):
+    
+    global task_done
+    if task_done:
+        return DrawingCompletedResponse(success=True)
+    
+    else:
+        return DrawingCompletedResponse(success=False)
+    
+def process_task():
+    
+    global task_done, current_task
+    
+    if current_task is not None:
+        rospy.loginfo("Processing the task.")
+        for idx, pt in enumerate(current_task):
+            # rospy.loginfo(f"Drawing point {idx+1}/{len(current_task):.2f} ({(idx+1)/len(current_task)*100:.2f})")
+            pass
+        
+        rospy.sleep(5)
+        rospy.logwarn("Task completed.")
+        task_done = True
+        current_task = None
+        
 if __name__ == "__main__":
+    
+    # Initialize the simulator
+    robot, world, data = initialize_simulator(Hz = 100)
+    
+    # Initialize the ROS node
     rospy.init_node("drawing_server")
     
     # Define the service
-    service = rospy.Service("drawing_service", DrawingService, handle_drawing_request)
-    rospy.loginfo("Drawing server is ready to receive requests.")
+    rospy.Service("drawing_request", DrawingRequest, handle_drawing_request)
+    rospy.Service("drawing_completed", DrawingCompleted, handle_drawing_complete)
     
-    rospy.spin()
+    rospy.loginfo("Drawing server is ready to receive requests.")
+
+    with mujoco.viewer.launch_passive(world, data) as viewer:
+        try:
+            while viewer.is_running():
+                
+                process_task()
+                # Synchronize with the viewer
+                viewer.sync()
+                
+                # Check the keyboard interrupt
+                if rospy.is_shutdown():
+                    rospy.logerr("ROS shutdown detected.")
+                    break
+                    
+        except rospy.ROSInterruptException:
+            print("ROS interrupt received.")
+        finally:
+            print("Exiting program.")
