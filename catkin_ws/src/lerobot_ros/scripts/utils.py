@@ -21,7 +21,7 @@ def visualize_in_rviz(robot, end_point_traj, end_point_traj_pub):
     pts.x = ee_pos[0]
     pts.y = ee_pos[1]
     pts.z = ee_pos[2]
-    
+
     end_point_traj.points.append(pts)
     end_point_traj_pub.publish(end_point_traj)
     

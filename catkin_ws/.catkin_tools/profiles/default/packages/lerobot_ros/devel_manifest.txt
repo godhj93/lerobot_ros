@@ -54,6 +54,8 @@ lerobot_ros
 /root/hri_lerobot/catkin_ws/devel/.private/lerobot_ros/lib/python3/dist-packages/lerobot_ros/srv/_DrawingCompleted.py /root/hri_lerobot/catkin_ws/devel/lib/python3/dist-packages/lerobot_ros/srv/_DrawingCompleted.py
 /root/hri_lerobot/catkin_ws/devel/.private/lerobot_ros/lib/python3/dist-packages/lerobot_ros/srv/_AddTwoInts.py /root/hri_lerobot/catkin_ws/devel/lib/python3/dist-packages/lerobot_ros/srv/_AddTwoInts.py
 /root/hri_lerobot/catkin_ws/devel/.private/lerobot_ros/lib/pkgconfig/lerobot_ros.pc /root/hri_lerobot/catkin_ws/devel/lib/pkgconfig/lerobot_ros.pc
+/root/hri_lerobot/catkin_ws/devel/.private/lerobot_ros/lib/lerobot_ros/drawing_server.py /root/hri_lerobot/catkin_ws/devel/lib/lerobot_ros/drawing_server.py
 /root/hri_lerobot/catkin_ws/devel/.private/lerobot_ros/lib/lerobot_ros/add_two_ints_client.py /root/hri_lerobot/catkin_ws/devel/lib/lerobot_ros/add_two_ints_client.py
+/root/hri_lerobot/catkin_ws/devel/.private/lerobot_ros/lib/lerobot_ros/drawing_client.py /root/hri_lerobot/catkin_ws/devel/lib/lerobot_ros/drawing_client.py
 /root/hri_lerobot/catkin_ws/devel/.private/lerobot_ros/lib/lerobot_ros/add_two_ints_server.py /root/hri_lerobot/catkin_ws/devel/lib/lerobot_ros/add_two_ints_server.py
 /root/hri_lerobot/catkin_ws/devel/.private/lerobot_ros/lib/lerobot_ros/cmake.lock /root/hri_lerobot/catkin_ws/devel/lib/lerobot_ros/cmake.lock

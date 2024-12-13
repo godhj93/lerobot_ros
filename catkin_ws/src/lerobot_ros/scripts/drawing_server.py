@@ -16,7 +16,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__)))
 from utils import fix_joint_angle, create_marker_traj, initialize_simulator, visualize_in_rviz
 import mujoco.viewer
 import mujoco
-
+import pandas as pd
 # 작업 상태 변수
 task_done = False
 current_task = None
@@ -41,10 +41,18 @@ def handle_drawing_complete(req):
     
 def process_task():
     
+    global FILE_NAME_INDEX
+    
     global task_done, current_task
     
     if current_task is not None:
         rospy.loginfo("Processing the task.")
+        
+        drawing_results = {
+            'x': [],
+            'y': [],
+            'z': []
+        }
         for idx, pt in enumerate(current_task):
             
             robot.target_ee_position = np.array([pt.x, pt.y, pt.z])
@@ -59,12 +67,29 @@ def process_task():
             
             rospy.loginfo(f"Drawing point {idx+1}/{len(current_task)}")        
             
+            drawing_results['x'].append(pt.x)
+            drawing_results['y'].append(pt.y)
+            drawing_results['z'].append(pt.z)
+            
             if rospy.is_shutdown():
                 rospy.logerr("ROS shutdown detected.")
                 break
+            
+        # Make directory
+        if not os.path.exists('trajectory_result'):
+            os.makedirs('trajectory_result', exist_ok=True)
+        
+        # Convert the trajectory to pandas dataframe
+        traj_df = pd.DataFrame(drawing_results)
+        traj_df.to_csv(f'trajectory_result/trajectory_{FILE_NAME_INDEX}.csv', index=False)
+        FILE_NAME_INDEX += 1
+        
         rospy.logwarn("Task completed.")
         task_done = True
         current_task = None
+        
+        return FILE_NAME_INDEX
+        
         
 if __name__ == "__main__":
     
@@ -82,13 +107,19 @@ if __name__ == "__main__":
     end_point_traj_pub = rospy.Publisher("end_point_traj", Marker, queue_size=10)
     rospy.loginfo("Drawing server is ready to receive requests.")
 
+    global FILE_NAME_INDEX
+    FILE_NAME_INDEX = 0
+    
     with mujoco.viewer.launch_passive(world, data) as viewer:
         try:
             while viewer.is_running():
                 
                 process_task()
                 
+              
+                
                 end_point_traj.points = []
+                
                 
                 # Check the keyboard interrupt
                 if rospy.is_shutdown():
