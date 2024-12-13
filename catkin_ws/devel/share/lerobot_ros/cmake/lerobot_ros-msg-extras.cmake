@@ -1,0 +1,1 @@
+/root/hri_lerobot/catkin_ws/devel/.private/lerobot_ros/share/lerobot_ros/cmake/lerobot_ros-msg-extras.cmake

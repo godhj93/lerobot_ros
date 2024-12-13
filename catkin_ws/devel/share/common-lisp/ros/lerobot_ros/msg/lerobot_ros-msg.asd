@@ -1,0 +1,1 @@
+/root/hri_lerobot/catkin_ws/devel/.private/lerobot_ros/share/common-lisp/ros/lerobot_ros/msg/lerobot_ros-msg.asd

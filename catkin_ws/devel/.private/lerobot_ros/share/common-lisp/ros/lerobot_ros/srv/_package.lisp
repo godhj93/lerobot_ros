@@ -1,0 +1,10 @@
+(cl:defpackage lerobot_ros-srv
+  (:use )
+  (:export
+   "DRAWINGSERVICE"
+   "<DRAWINGSERVICE-REQUEST>"
+   "DRAWINGSERVICE-REQUEST"
+   "<DRAWINGSERVICE-RESPONSE>"
+   "DRAWINGSERVICE-RESPONSE"
+  ))
+
