@@ -2,8 +2,8 @@ import numpy as np
 
 X_MIN_BOUND = -0.06
 X_MAX_BOUND = 0.06
-Y_MIN_BOUND = 0.25
-Y_MAX_BOUND = 0.30
+Y_MIN_BOUND = 0.18
+Y_MAX_BOUND = 0.30 # 0.35
 Z_MIN_BOUND = 0.051
 Z_MAX_BOUND = 0.1
 

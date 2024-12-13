@@ -10,8 +10,21 @@ sys.path.append(os.path.join(os.path.dirname(__file__)))
 
 from robot import Robot
 from interface import SimulatedRobot
+from geometry_msgs.msg import Point
 
-
+def visualize_in_rviz(robot, end_point_traj, end_point_traj_pub):
+    
+    ee_pos = robot.read_ee_pos(joint_name='joint5')
+    
+    pts = Point()
+    
+    pts.x = ee_pos[0]
+    pts.y = ee_pos[1]
+    pts.z = ee_pos[2]
+    
+    end_point_traj.points.append(pts)
+    end_point_traj_pub.publish(end_point_traj)
+    
 def initialize_simulator(Hz = 100.0): 
     world, data = load_world()
     robot = SimulatedRobot(world, data)
@@ -57,21 +70,23 @@ def fix_joint_angle():
 
 def create_marker_traj(ns = "joint6_trajectory"):
     
-        trajectory_marker = Marker()
-        trajectory_marker.header.frame_id = "world"  # Replace with your Fixed Frame
-        trajectory_marker.header.stamp = rospy.Time.now()
-        trajectory_marker.ns = ns
-        trajectory_marker.id = 0
-        trajectory_marker.type = Marker.LINE_STRIP  # Type for trajectory
-        trajectory_marker.action = Marker.ADD
-        trajectory_marker.scale.x = 0.01  # Line width
-        trajectory_marker.color.a = 1.0  # Transparency
-        trajectory_marker.color.r = 1.0  # Red
-        trajectory_marker.color.g = 0.0
-        trajectory_marker.color.b = 0.0
-        trajectory_marker.pose.orientation.w = 1.0
-        
-        return trajectory_marker
+    trajectory_marker = Marker()
+    trajectory_marker.header.frame_id = "world"  # Replace with your Fixed Frame
+    trajectory_marker.header.stamp = rospy.Time.now()
+    trajectory_marker.ns = ns
+    trajectory_marker.id = 0
+    trajectory_marker.type = Marker.POINTS  # Type for trajectory
+    trajectory_marker.action = Marker.ADD
+    trajectory_marker.scale.x = 0.001  # Line width
+    trajectory_marker.scale.y = 0.001  # Line width
+    trajectory_marker.scale.z = 0.001  # Line width
+    trajectory_marker.color.a = 1.0  # Transparency
+    trajectory_marker.color.r = 1.0  # Red
+    trajectory_marker.color.g = 0.0
+    trajectory_marker.color.b = 0.0
+    trajectory_marker.pose.orientation.w = 1.0
+    
+    return trajectory_marker
     
 
 def degree2pwm(degree: np.ndarray) -> np.ndarray:

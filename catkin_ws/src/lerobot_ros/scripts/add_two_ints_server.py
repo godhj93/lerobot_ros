@@ -5,14 +5,15 @@ from __future__ import print_function
 from lerobot_ros.srv import DrawingRequest, DrawingRequestResponse, DrawingCompleted, DrawingCompletedResponse
 import rospy
 from geometry_msgs.msg import Point
+from visualization_msgs.msg import Marker
+
 from termcolor import colored
 import sys
 import os
 import numpy as np
 # Add the path to the utils
 sys.path.append(os.path.join(os.path.dirname(__file__)))
-from utils import load_world, fix_joint_angle, create_marker_traj, initialize_simulator
-from robot import Robot
+from utils import fix_joint_angle, create_marker_traj, initialize_simulator, visualize_in_rviz
 import mujoco.viewer
 import mujoco
 
@@ -53,10 +54,14 @@ def process_task():
                     ee_target_rot=fix_joint_angle(), 
                     joint_name='joint5')
             
-            # Synchronize with the viewer
+            visualize_in_rviz(robot, end_point_traj, end_point_traj_pub)
             viewer.sync()
+            
             rospy.loginfo(f"Drawing point {idx+1}/{len(current_task)}")        
             
+            if rospy.is_shutdown():
+                rospy.logerr("ROS shutdown detected.")
+                break
         rospy.logwarn("Task completed.")
         task_done = True
         current_task = None
@@ -73,6 +78,8 @@ if __name__ == "__main__":
     rospy.Service("drawing_request", DrawingRequest, handle_drawing_request)
     rospy.Service("drawing_completed", DrawingCompleted, handle_drawing_complete)
     
+    end_point_traj = create_marker_traj()
+    end_point_traj_pub = rospy.Publisher("end_point_traj", Marker, queue_size=10)
     rospy.loginfo("Drawing server is ready to receive requests.")
 
     with mujoco.viewer.launch_passive(world, data) as viewer:
@@ -80,6 +87,8 @@ if __name__ == "__main__":
             while viewer.is_running():
                 
                 process_task()
+                
+                end_point_traj.points = []
                 
                 # Check the keyboard interrupt
                 if rospy.is_shutdown():
