@@ -38,7 +38,7 @@ def transform_to_configuration_space(positions):
         # x_normalized *= scale_factor
 
         # z 정규화
-        z_normalized = Z_MIN_BOUND + (z - z_min) / (z_max - z_min) * (Z_MAX_BOUND - Z_MIN_BOUND)
+        z_normalized = Z_MIN_BOUND #+ (z - z_min) / (z_max - z_min) * (Z_MAX_BOUND - Z_MIN_BOUND)
 
         # 결과 추가
         transformed_positions.append([x_normalized, y_normalized, z_normalized])

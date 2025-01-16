@@ -34,7 +34,7 @@ def initialize_simulator(Hz = 100.0):
     print(colored("Simulator Initialized!", 'green'))
     return robot, world, data
     
-def load_world(world_path = '/root/hri_lerobot/catkin_ws/src/lerobot_ros/scripts/low_cost_robot/scene.xml'):
+def load_world(world_path = '/root/lerobot_ros/catkin_ws/src/lerobot_ros/scripts/low_cost_robot/scene.xml'):
         
     # Load world and data
     world = mujoco.MjModel.from_xml_path(world_path)
@@ -68,7 +68,7 @@ def fix_joint_angle():
     rot = calculate_target_rotation()
     return rot.flatten()
 
-def create_marker_traj(ns = "joint6_trajectory"):
+def create_marker_traj(ns = "joint6_trajectory", color = 'red'):
     
     trajectory_marker = Marker()
     trajectory_marker.header.frame_id = "world"  # Replace with your Fixed Frame
@@ -81,9 +81,16 @@ def create_marker_traj(ns = "joint6_trajectory"):
     trajectory_marker.scale.y = 0.001  # Line width
     trajectory_marker.scale.z = 0.001  # Line width
     trajectory_marker.color.a = 1.0  # Transparency
-    trajectory_marker.color.r = 1.0  # Red
-    trajectory_marker.color.g = 0.0
-    trajectory_marker.color.b = 0.0
+    
+    if color == 'red':
+        trajectory_marker.color.r = 1.0  # Red
+        trajectory_marker.color.g = 0.0
+        trajectory_marker.color.b = 0.0
+    else:
+        trajectory_marker.color.r = 0.0
+        trajectory_marker.color.g = 1.0
+        trajectory_marker.color.b = 0.0
+        
     trajectory_marker.pose.orientation.w = 1.0
     
     return trajectory_marker

@@ -48,11 +48,13 @@ def process_task():
     if current_task is not None:
         rospy.loginfo("Processing the task.")
         
-        drawing_results = {
+        drawing_true = {
             'x': [],
             'y': [],
             'z': []
         }
+        
+        
         for idx, pt in enumerate(current_task):
             
             robot.target_ee_position = np.array([pt.x, pt.y, pt.z])
@@ -67,9 +69,12 @@ def process_task():
             
             rospy.loginfo(f"Drawing point {idx+1}/{len(current_task)}")        
             
-            drawing_results['x'].append(pt.x)
-            drawing_results['y'].append(pt.y)
-            drawing_results['z'].append(pt.z)
+            end_point_true.points.append(pt)
+            end_point_true_pub.publish(end_point_true)
+            
+            drawing_true['x'].append(pt.x)
+            drawing_true['y'].append(pt.y)
+            drawing_true['z'].append(pt.z)
             
             if rospy.is_shutdown():
                 rospy.logerr("ROS shutdown detected.")
@@ -80,7 +85,7 @@ def process_task():
             os.makedirs('trajectory_result', exist_ok=True)
         
         # Convert the trajectory to pandas dataframe
-        traj_df = pd.DataFrame(drawing_results)
+        traj_df = pd.DataFrame(drawing_true)
         traj_df.to_csv(f'trajectory_result/trajectory_{FILE_NAME_INDEX}.csv', index=False)
         FILE_NAME_INDEX += 1
         
@@ -94,7 +99,7 @@ def process_task():
 if __name__ == "__main__":
     
     # Initialize the simulator
-    robot, world, data = initialize_simulator(Hz = 100)
+    robot, world, data = initialize_simulator(Hz = 500)
     
     # Initialize the ROS node
     rospy.init_node("drawing_server")
@@ -105,6 +110,10 @@ if __name__ == "__main__":
     
     end_point_traj = create_marker_traj()
     end_point_traj_pub = rospy.Publisher("end_point_traj", Marker, queue_size=10)
+    
+    end_point_true = create_marker_traj(ns="end_point_true", color='white')
+    end_point_true_pub = rospy.Publisher("end_point_true", Marker, queue_size=10)
+    
     rospy.loginfo("Drawing server is ready to receive requests.")
 
     global FILE_NAME_INDEX
@@ -115,8 +124,6 @@ if __name__ == "__main__":
             while viewer.is_running():
                 
                 process_task()
-                
-              
                 
                 end_point_traj.points = []
                 
